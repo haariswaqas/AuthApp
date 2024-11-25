@@ -1,5 +1,6 @@
 // app.js
 const express = require('express');
+const cors = require('cors'); // Import cors package
 const dotenv = require('dotenv');
 const sequelize = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
@@ -8,6 +9,9 @@ const noteRoutes = require('./routes/noteRoutes');  // Import noteRoutes
 dotenv.config();
 
 const app = express();
+
+// Enable CORS for requests from http://localhost:3001
+app.use(cors({ origin: 'http://localhost:3001' }));
 
 // Middleware
 app.use(express.json());
