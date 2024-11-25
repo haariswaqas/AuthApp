@@ -3,6 +3,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const sequelize = require('./config/database');
 const authRoutes = require('./routes/authRoutes');
+const noteRoutes = require('./routes/noteRoutes');  // Import noteRoutes
 
 dotenv.config();
 
@@ -18,7 +19,8 @@ app.use((err, req, res, next) => {
 });
 
 // Routes
-app.use('/api', authRoutes);
+app.use('/api', authRoutes);  // Auth routes are prefixed with '/api/auth'
+app.use('/api/notes', noteRoutes);  // Notes routes are prefixed with '/api'
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -31,12 +33,14 @@ const startServer = async () => {
     try {
         await sequelize.authenticate();
         console.log('Database connected successfully');
-        
+        await sequelize.sync({ alter: true }); // `alter: true` updates the schema without dropping data
         await sequelize.sync();
         console.log('Database models synchronized');
         
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
+            console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
         });
     } catch (error) {
         console.error('Unable to start server:', error);
